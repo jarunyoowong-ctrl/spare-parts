@@ -128,4 +128,18 @@ $("#xf").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f)re
   if(!rows.length)throw 0;if(!ls.set("parts_v1",{rows,date:new Date().toLocaleDateString("th-TH")}))throw 1;load();showText();alert("อัปเดตแล้ว "+rows.length+" รายการ (ใช้ Column A, B, H)")}catch(x){alert("อ่านไฟล์ไม่สำเร็จ ตรวจสอบว่า Column A = Item number, B = Item name, H = Total available")}};
 $("#rst").onclick=()=>{ls.del("parts_v1");load();showText()};
 load();showText();
+const SHEET="https://docs.google.com/spreadsheets/d/e/2PACX-1vS4FMxFMlWlKVhPECHRysL7VF0aaq1x3Pyd-TuMTW8yB5u233U2IMCwavgzzBI7pg/pub?gid=2054575764&single=true&output=csv";
+function csv(t){const out=[];let r=[],f="",q=false;for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}else if(c==='"')q=true;else if(c===","){r.push(f);f=""}else if(c==="\n"){r.push(f);out.push(r);r=[];f=""}else if(c!=="\r")f+=c}if(f||r.length){r.push(f);out.push(r)}return out}
+function setLive(rows,t){parts=rows.map(r=>({code:r[0],name:r[1],qty:+r[2]||0,c:norm(r[0]),n:norm(r[1])}));
+ const d=new Date(t),p=n=>String(n).padStart(2,"0");
+ $("#info").textContent=parts.length+" รายการ · ข้อมูลจาก Google Sheets (อัปเดต "+p(d.getDate())+"/"+p(d.getMonth()+1)+" "+p(d.getHours())+":"+p(d.getMinutes())+")";
+ if(mode==="text")showText()}
+async function live(){try{const r=await fetch(SHEET,{cache:"no-store"});if(!r.ok)throw new Error("http "+r.status);
+ const rows=csv(await r.text()).slice(1).filter(x=>x[0]&&/^MT-?\d/i.test(x[0].trim())).map(x=>[x[0].trim(),String(x[1]||"").replace(/\s+/g," ").trim(),parseFloat(x[7])||0]);
+ if(rows.length<50)throw new Error("too few rows");ls.set("live_v1",{rows,t:Date.now()});setLive(rows,Date.now())}
+ catch(e){const c=ls.get("live_v1");if(c){setLive(c.rows,c.t);$("#info").textContent+=" · ออฟไลน์ ใช้ข้อมูลล่าสุดที่โหลดไว้"}else $("#info").textContent=parts.length+" รายการ · ใช้ข้อมูลสำรอง (เชื่อมต่อ Google Sheets ไม่ได้)"}}
+$("#upx").hidden=true;$("#rst").hidden=true;
+{const b=document.createElement("button");b.className="btn alt";b.textContent="รีเฟรชข้อมูล";b.onclick=live;$("#upx").parentNode.prepend(b)}
+{const c=ls.get("live_v1");if(c)setLive(c.rows,c.t)}
+live();
 </script></body></html>
