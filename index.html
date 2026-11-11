@@ -87,7 +87,7 @@ footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-si
 <input id="phf" type="file" accept="image/*" multiple hidden>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-const BASE=[],BASE_DATE="",VER="SCAL PART MT 002",VER_DATE="11/11/2026";
+const BASE=[],BASE_DATE="",VER="SCAL PART MT 003",VER_DATE="11/11/2026";
 const $=s=>document.querySelector(s), esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let parts=[],mode="text",shown=[],badge={},open=null,lib={},photoMap,admin=false,made=[],phCode=null,prev={};
 const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
@@ -102,7 +102,7 @@ function search(q,limit=30){q=q.trim();if(!q)return[];const nq=norm(q);if(!nq)re
   else if(toks.length>1){const h=toks.filter(t=>p.n.includes(t)||p.c.includes(t)).length;if(h>=Math.ceil(toks.length/2))s=h/toks.length*70}
   if(s)res.push({p,s})}
  return res.sort((a,b)=>b.s-a.s||a.p.code.localeCompare(b.p.code)).slice(0,limit)}
-function meta(p){const mm=(p.min!=null||p.max!=null)?`<span>Min ${p.min==null?"-":p.min}</span><span>Max ${p.max==null?"-":p.max}</span>`:"";return(p.status||mm)?`<div class="meta">${p.status?`<span class="st">${esc(p.status)}</span>`:""}${mm}</div>`:""}
+function meta(p){const mm=(p.min!=null||p.max!=null)?`<span>Max ${p.max==null?"-":p.max}</span><span>Min ${p.min==null?"-":p.min}</span>`:"";return(p.status||mm)?`<div class="meta">${p.status?`<span class="st">${esc(p.status)}</span>`:""}${mm}</div>`:""}
 function stat(q){if(q==null)return["na","ไม่มียอด"];return q<=0?["out","หมด"]:q<=2?["low","ใกล้หมด"]:["ok","มีของ"]}
 function render(list,empty){shown=list;const el=$("#out");
  if(!list.length){el.innerHTML='<div class="empty">'+esc(empty||"ไม่พบรายการ ลองพิมพ์ส่วนของ Model ให้สั้นลง")+"</div>";return}
@@ -165,7 +165,8 @@ async function live(){const[a,b]=await Promise.allSettled([getCsv(SHEET_STOCK),g
   const M=new Map();let sd="";
   if(a.status==="fulfilled"){const all=a.value;
    for(const x of all){const c=cl(x[0]);if(!/^MT-?\d/i.test(c))continue;M.set(c.toUpperCase(),{code:c,name:cl(x[1]),status:"",qty:num(x[7])||0,min:null,max:null})}
-   for(let r=0;r<Math.min(3,all.length)&&!sd;r++)for(let k=0;k<all[r].length&&!sd;k++){if(/stock\s*date/i.test(String(all[r][k]||""))){const m=DRX.exec(String(all[r][k]))||DRX.exec(String(all[r][k+1]||""))||DRX.exec(String((all[r+1]||[])[k]||""));if(m)sd=m[0]}}}
+   for(let r=0;r<Math.min(3,all.length)&&!sd;r++)for(let k=0;k<all[r].length&&!sd;k++){if(/stock\s*date/i.test(String(all[r][k]||""))){const m=DRX.exec(String(all[r][k]))||DRX.exec(String(all[r][k+1]||""))||DRX.exec(String((all[r+1]||[])[k]||""));if(m)sd=m[0]}}
+   if(!sd)for(let r=0;r<Math.min(3,all.length)&&!sd;r++)for(let k=36;k<all[r].length&&!sd;k++){const t=String(all[r][k]||"").trim();if(/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(t))sd=t}}
   if(b.status==="fulfilled"){for(const x of b.value){const c=cl(x[1]);if(!/^MT-?\d/i.test(c))continue;const key=c.toUpperCase(),o=M.get(key)||{code:c,name:"",qty:null};
    o.name=cl(x[2])||o.name;o.status=cl(x[5]);o.max=num(x[11]);o.min=num(x[12]);M.set(key,o)}}
   const rows=[...M.values()];if(rows.length<50)throw new Error("too few rows");
