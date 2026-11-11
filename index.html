@@ -51,7 +51,7 @@ input[type=search]:focus,button:focus-visible,.card:focus-visible{outline:3px so
 footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--mute);display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
 .spin{display:inline-block;width:16px;height:16px;border:3px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:s 1s linear infinite;vertical-align:-3px;margin-right:6px}
 @keyframes s{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.spin{animation:none}}
-.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;font-size:12px;color:var(--mute)}.meta span{border:1px solid var(--line);border-radius:6px;padding:1px 7px}.meta .st{color:var(--ink);font-weight:500}.vis{margin-top:10px;font-size:12px;color:var(--mute);text-align:center;opacity:.8}.adm{background:var(--card);border:1.5px dashed var(--acc);border-radius:10px;padding:10px 12px;margin:12px 0;font-size:14px}.adm small{color:var(--mute);display:block;margin-top:4px;word-break:break-all}.gal .th{cursor:zoom-in}#lb{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:50;padding:12px;cursor:zoom-out}#lb img{max-width:100%;max-height:100%;border-radius:8px}.tkrow{display:flex;gap:6px;margin-top:8px}.tkrow input{flex:1;min-width:0;padding:9px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:14px var(--mono)}#tkok{margin-top:8px}#madeList{white-space:pre-line;display:block;margin-top:6px}.brand{display:flex;align-items:stretch;gap:8px}.admtag{display:flex;flex-direction:column;justify-content:center;align-items:center;background:#fff;color:#0B2A6B;font:700 20px/1.1 var(--mono);letter-spacing:1px;padding:0 14px;border-radius:10px}.admtag small{font:600 10px/1 var(--mono);letter-spacing:1.5px;margin-top:4px}.bar{height:8px;background:var(--line);border-radius:6px;margin-top:8px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--ok)}
+.qty.na{background:var(--bg);color:var(--mute);border:1px solid var(--line)}.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;font-size:12px;color:var(--mute)}.meta span{border:1px solid var(--line);border-radius:6px;padding:1px 7px}.meta .st{color:var(--ink);font-weight:500}.vis{margin-top:10px;font-size:12px;color:var(--mute);text-align:center;opacity:.8}.adm{background:var(--card);border:1.5px dashed var(--acc);border-radius:10px;padding:10px 12px;margin:12px 0;font-size:14px}.adm small{color:var(--mute);display:block;margin-top:4px;word-break:break-all}.gal .th{cursor:zoom-in}#lb{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:50;padding:12px;cursor:zoom-out}#lb img{max-width:100%;max-height:100%;border-radius:8px}.tkrow{display:flex;gap:6px;margin-top:8px}.tkrow input{flex:1;min-width:0;padding:9px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:14px var(--mono)}#tkok{margin-top:8px}#madeList{white-space:pre-line;display:block;margin-top:6px}.brand{display:flex;align-items:stretch;gap:8px}.admtag{display:flex;flex-direction:column;justify-content:center;align-items:center;background:#fff;color:#0B2A6B;font:700 20px/1.1 var(--mono);letter-spacing:1px;padding:0 14px;border-radius:10px}.admtag small{font:600 10px/1 var(--mono);letter-spacing:1.5px;margin-top:4px}.bar{height:8px;background:var(--line);border-radius:6px;margin-top:8px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--ok)}
 .sgs{display:flex;gap:6px;margin:12px 0 8px}.sg{flex:1;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:9px 4px;font:500 14px var(--sans);cursor:pointer}.sg[aria-pressed=true]{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
 #chkQ{width:100%;font:500 16px var(--sans);padding:11px;border:2px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
 .crow{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 12px}.crow .code{font-size:17px}.crow .name{font-size:14px;margin:2px 0 0}.cr{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:none}.tg{font-size:12px;font-weight:700;border-radius:6px;padding:2px 8px}
@@ -87,7 +87,7 @@ footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-si
 <input id="phf" type="file" accept="image/*" multiple hidden>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-const BASE=[],BASE_DATE="",VER="SCAL PART MT 001",VER_DATE="11/11/2026";
+const BASE=[],BASE_DATE="",VER="SCAL PART MT 002",VER_DATE="11/11/2026";
 const $=s=>document.querySelector(s), esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let parts=[],mode="text",shown=[],badge={},open=null,lib={},photoMap,admin=false,made=[],phCode=null,prev={};
 const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
@@ -103,12 +103,12 @@ function search(q,limit=30){q=q.trim();if(!q)return[];const nq=norm(q);if(!nq)re
   if(s)res.push({p,s})}
  return res.sort((a,b)=>b.s-a.s||a.p.code.localeCompare(b.p.code)).slice(0,limit)}
 function meta(p){const mm=(p.min!=null||p.max!=null)?`<span>Min ${p.min==null?"-":p.min}</span><span>Max ${p.max==null?"-":p.max}</span>`:"";return(p.status||mm)?`<div class="meta">${p.status?`<span class="st">${esc(p.status)}</span>`:""}${mm}</div>`:""}
-function stat(q){return q<=0?["out","หมด"]:q<=2?["low","ใกล้หมด"]:["ok","มีของ"]}
+function stat(q){if(q==null)return["na","ไม่มียอด"];return q<=0?["out","หมด"]:q<=2?["low","ใกล้หมด"]:["ok","มีของ"]}
 function render(list,empty){shown=list;const el=$("#out");
  if(!list.length){el.innerHTML='<div class="empty">'+esc(empty||"ไม่พบรายการ ลองพิมพ์ส่วนของ Model ให้สั้นลง")+"</div>";return}
  el.innerHTML=list.map(({p})=>{const[c,t]=stat(p.qty),ph=lib[p.code]||[],b=badge[p.code];
   return `<div class="card" data-c="${p.code}"><div class="row"><div><div class="code">${esc(p.code)}</div><p class="name">${esc(p.name)}</p>${meta(p)}${b?`<div class="match">${esc(b)}</div>`:""}</div>
-  <div class="qty ${c}"><b>${p.qty}</b><span>${t}</span></div></div>
+  <div class="qty ${c}"><b>${p.qty==null?"–":p.qty}</b><span>${t}</span></div></div>
   ${gal(p.code)}</div>`}).join("")}
 function showText(){badge={};const q=$("#q").value;if(!q.trim()){$("#out").innerHTML='<div class="empty">พิมพ์ Model หรือชื่ออะไหล่เพื่อดู MT Code และจำนวนคงเหลือ</div>';return}render(search(q))}
 ["input","keyup","change","search","compositionend"].forEach(ev=>$("#q").addEventListener(ev,showText));
@@ -151,21 +151,30 @@ $("#xf").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f)re
   if(!rows.length)throw 0;if(!ls.set("parts_v1",{rows,date:new Date().toLocaleDateString("th-TH")}))throw 1;load();showText();alert("อัปเดตแล้ว "+rows.length+" รายการ (ใช้ Column A, B, H)")}catch(x){alert("อ่านไฟล์ไม่สำเร็จ ตรวจสอบว่า Column A = Item number, B = Item name, H = Total available")}};
 $("#rst").onclick=()=>{ls.del("parts_v1");load();showText()};
 load();showText();
-const SHEET="https://docs.google.com/spreadsheets/d/e/2PACX-1vSWtvlTrwvvdJTSQFHswjtVDFZWutt-gcfperkVVj1iZO0YBtVBXa9pl56ogsETwA/pub?gid=971310024&single=true&output=csv";
+const SHEET_STOCK="https://docs.google.com/spreadsheets/d/e/2PACX-1vS4FMxFMlWlKVhPECHRysL7VF0aaq1x3Pyd-TuMTW8yB5u233U2IMCwavgzzBI7pg/pub?gid=2054575764&single=true&output=csv",SHEET_INFO="https://docs.google.com/spreadsheets/d/e/2PACX-1vSWtvlTrwvvdJTSQFHswjtVDFZWutt-gcfperkVVj1iZO0YBtVBXa9pl56ogsETwA/pub?gid=971310024&single=true&output=csv";
 function csv(t){const out=[];let r=[],f="",q=false;for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}else if(c==='"')q=true;else if(c===","){r.push(f);f=""}else if(c==="\n"){r.push(f);out.push(r);r=[];f=""}else if(c!=="\r")f+=c}if(f||r.length){r.push(f);out.push(r)}return out}
 const num=v=>{const n=parseFloat(String(v==null?"":v).replace(/[,\s$]/g,""));return isFinite(n)?n:null};
-function setLive(rows,sd){parts=rows.map(r=>({code:r[0],name:r[1],status:r[2],qty:r[3]||0,min:r[4],max:r[5],c:norm(r[0]),n:norm(r[1])}));
- $("#info").textContent=parts.length+" รายการ · ยอด Stock อัปเดตล่าสุด "+(sd||"ไม่ระบุ");
+const cl=v=>String(v==null?"":v).replace(/\s+/g," ").trim();
+const DRX=/\d{1,2}\/\d{1,2}\/\d{2,4}/;
+function setLive(rows,sd,note){parts=rows.map(r=>({code:r.code,name:r.name,status:r.status,qty:r.qty,min:r.min,max:r.max,c:norm(r.code),n:norm(r.name)}));
+ $("#info").textContent=parts.length+" รายการ · ยอด Stock อัปเดตล่าสุด "+(sd||"ไม่ระบุ")+(note||"");
  if(mode==="text")showText();if(!$("#chk").hidden)chkRender()}
-async function live(){try{const r=await fetch(SHEET,{cache:"no-store"});if(!r.ok)throw new Error("http "+r.status);
- const all=csv(await r.text());let h=all.findIndex(x=>String(x[1]||"").trim().toLowerCase()==="item number");
- let sd="";for(const x of all.slice(0,h<0?8:h)){const m=/\d{1,2}\/\d{1,2}\/\d{2,4}/.exec(String(x[8]||""));if(m){sd=m[0];break}}
- const rows=all.slice(h+1).filter(x=>/^MT-?\d/i.test(String(x[1]||"").trim())).map(x=>[String(x[1]).trim(),String(x[2]||"").replace(/\s+/g," ").trim(),String(x[5]||"").replace(/\s+/g," ").trim(),num(x[8])||0,num(x[11]),num(x[12])]);
- if(rows.length<50)throw new Error("too few rows");ls.set("live_v2",{rows,sd,t:Date.now()});setLive(rows,sd)}
- catch(e){const c=ls.get("live_v2");if(c){setLive(c.rows,c.sd);$("#info").textContent+=" · ออฟไลน์ ใช้ข้อมูลที่โหลดไว้ล่าสุด"}else $("#info").textContent="โหลดข้อมูลสต็อกจาก Google Sheets ไม่ได้ กรุณาตรวจอินเทอร์เน็ตแล้วกดรีเฟรชข้อมูล"}}
+async function getCsv(u){const r=await fetch(u,{cache:"no-store"});if(!r.ok)throw new Error("http "+r.status);return csv(await r.text())}
+async function live(){const[a,b]=await Promise.allSettled([getCsv(SHEET_STOCK),getCsv(SHEET_INFO)]);
+ try{if(a.status!=="fulfilled"&&b.status!=="fulfilled")throw new Error("both failed");
+  const M=new Map();let sd="";
+  if(a.status==="fulfilled"){const all=a.value;
+   for(const x of all){const c=cl(x[0]);if(!/^MT-?\d/i.test(c))continue;M.set(c.toUpperCase(),{code:c,name:cl(x[1]),status:"",qty:num(x[7])||0,min:null,max:null})}
+   for(let r=0;r<Math.min(3,all.length)&&!sd;r++)for(let k=0;k<all[r].length&&!sd;k++){if(/stock\s*date/i.test(String(all[r][k]||""))){const m=DRX.exec(String(all[r][k]))||DRX.exec(String(all[r][k+1]||""))||DRX.exec(String((all[r+1]||[])[k]||""));if(m)sd=m[0]}}}
+  if(b.status==="fulfilled"){for(const x of b.value){const c=cl(x[1]);if(!/^MT-?\d/i.test(c))continue;const key=c.toUpperCase(),o=M.get(key)||{code:c,name:"",qty:null};
+   o.name=cl(x[2])||o.name;o.status=cl(x[5]);o.max=num(x[11]);o.min=num(x[12]);M.set(key,o)}}
+  const rows=[...M.values()];if(rows.length<50)throw new Error("too few rows");
+  const note=a.status!=="fulfilled"?" · ⚠ โหลดชีตยอดคงเหลือไม่สำเร็จ":b.status!=="fulfilled"?" · ⚠ โหลดชีตรายละเอียดไม่สำเร็จ":"";
+  if(!note)ls.set("live_v3",{rows,sd,t:Date.now()});setLive(rows,sd,note)}
+ catch(e){const c=ls.get("live_v3");if(c){setLive(c.rows,c.sd," · ออฟไลน์ ใช้ข้อมูลที่โหลดไว้ล่าสุด")}else $("#info").textContent="โหลดข้อมูลสต็อกจาก Google Sheets ไม่ได้ กรุณาตรวจอินเทอร์เน็ตแล้วกดรีเฟรชข้อมูล"}}
 $("#upx").hidden=true;$("#rst").hidden=true;
 {const b=document.createElement("button");b.className="btn alt";b.textContent="รีเฟรชข้อมูล";b.onclick=live;$("#upx").parentNode.prepend(b)}
-ls.del("live_v1");{const c=ls.get("live_v2");if(c)setLive(c.rows,c.sd)}
+ls.del("live_v1");ls.del("live_v2");{const c=ls.get("live_v3");if(c)setLive(c.rows,c.sd)}
 
 const GH="https://api.github.com/repos/jarunyoowong-ctrl/spare-parts/git/trees/main:photos";
 const ghH=()=>{const t=admin&&ls.get("gh_token");return t?{Authorization:"Bearer "+t,Accept:"application/vnd.github+json"}:{Accept:"application/vnd.github+json"}};
