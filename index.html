@@ -85,9 +85,10 @@ footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-si
 </main>
 <div id="lb" hidden><img alt=""></div>
 <input id="phf" type="file" accept="image/*" multiple hidden>
+<input id="phc" type="file" accept="image/*" capture="environment" hidden>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-const BASE=[],BASE_DATE="",VER="SCAL PART MT 004",VER_DATE="11/11/2026";
+const BASE=[],BASE_DATE="",VER="SCAL PART MT 006",VER_DATE="11/11/2026";
 const $=s=>document.querySelector(s), esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let parts=[],mode="text",shown=[],badge={},open=null,lib={},photoMap,admin=false,made=[],phCode=null,prev={};
 const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
@@ -119,7 +120,15 @@ document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{mode=t.dataset.m;doc
  $("#p-text").hidden=mode!=="text";$("#p-cam").hidden=mode==="text";$("#ai").hidden=true;$("#pv").hidden=true;$("#out").innerHTML="";
  $("#camhint").textContent=mode==="plate"?"ถ่ายให้เห็นตัวอักษรบน Name plate ชัดเจน ไม่สะท้อนแสง AI จะอ่าน Model แล้วค้นหาให้":"ถ่ายอะไหล่ให้เห็นทั้งชิ้น พื้นหลังเรียบ AI จะเดาประเภท/ยี่ห้อ และเทียบกับรูปที่ช่างเคยบันทึกไว้";
  if(mode==="text")showText()});
-function shrink(file,max,q){return new Promise((res,rej)=>{const im=new Image(),u=URL.createObjectURL(file);im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>res({blob:b,url:c.toDataURL("image/jpeg",q||.7)}),"image/jpeg",q||.8)};im.onerror=rej;im.src=u})}
+async function shrink(file,max,q){
+ if(window.createImageBitmap&&file.size>700*1024){try{
+  const bm=await createImageBitmap(file,{imageOrientation:"from-image",resizeWidth:Math.round(max*1.6),resizeQuality:"medium"});
+  const k=Math.min(1,max/Math.max(bm.width,bm.height)),c=document.createElement("canvas");c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);
+  c.getContext("2d").drawImage(bm,0,0,c.width,c.height);if(bm.close)bm.close();
+  const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",q||.8));if(!blob)throw 0;
+  return{blob,url:c.toDataURL("image/jpeg",q||.7)}}catch(e){}}
+ return shrinkImg(file,max,q)}
+function shrinkImg(file,max,q){return new Promise((res,rej)=>{const im=new Image(),u=URL.createObjectURL(file);im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>res({blob:b,url:c.toDataURL("image/jpeg",q||.7)}),"image/jpeg",q||.8)};im.onerror=()=>rej(new Error("เปิดรูปไม่ได้ (ไฟล์ใหญ่เกินไปหรือรูปแบบไม่รองรับ)"));im.src=u})}
 $("#shot").onclick=()=>$("#file").click();
 $("#file").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;
  const sm=await shrink(f,1280);$("#pv").src=sm.url;$("#pv").hidden=false;badge={};
@@ -182,7 +191,7 @@ ls.del("live_v1");ls.del("live_v2");ls.del("live_v3");{const c=ls.get("live_v4")
 
 const GH="https://api.github.com/repos/jarunyoowong-ctrl/spare-parts/git/trees/main:photos";
 const ghH=()=>{const t=admin&&ls.get("gh_token");return t?{Authorization:"Bearer "+t,Accept:"application/vnd.github+json"}:{Accept:"application/vnd.github+json"}};
-function gal(code){const k=String(code).toUpperCase(),btn=admin?`<button class="btn alt" data-ph="${esc(code)}">📷 เพิ่มรูป</button>`:"";
+function gal(code){const k=String(code).toUpperCase(),btn=admin?`<button class="btn alt" data-cam="${esc(code)}">📷 ถ่ายรูป</button><button class="btn alt" data-ph="${esc(code)}">🖼 เลือกจากคลัง</button>`:"";
  let list=photoMap&&photoMap[k]?photoMap[k]:null,h="";
  if(list)h=list.map(f=>{const im=`<img class="th" loading="lazy" src="${prev[f]||"photos/"+encodeURIComponent(f)}" alt="รูป ${esc(code)}">`;return admin?`<figure>${im}<button data-rm="${esc(f)}" aria-label="ลบรูป ${esc(f)}">×</button></figure>`:im}).join("");
  else if(photoMap===null)h=`<img class="th" loading="lazy" src="photos/${encodeURIComponent(code)}.jpg" alt="รูป ${esc(code)}" onerror="this.remove()">`;
@@ -194,12 +203,13 @@ async function loadPhotos(){const c=ls.get("photos_idx");
  else try{const r=await fetch(GH,{headers:ghH()});if(r.status===404)photoMap={};else if(!r.ok)throw 0;else photoMap=buildMap(((await r.json()).tree||[]).map(x=>({name:x.path})));ls.set("photos_idx",{t:Date.now(),m:photoMap})}catch(e){photoMap=c?c.m:null}
  refresh()}
 function nextName(code){const used=new Set([...(photoMap&&photoMap[code.toUpperCase()]||[]),...made].map(x=>x.toUpperCase()));for(let n=1;;n++){const f=code+(n>1?"_"+n:"")+".jpg";if(!used.has(f.toUpperCase()))return f}}
-function setAdmin(){admin=location.hash==="#admin";$("#adm").hidden=!admin;if(!admin&&!$("#chk").hidden)showChk(false);$("#admtag").hidden=!admin;if(shown.length)render(shown)}
+function setAdmin(){admin=location.hash==="#admin";if(admin&&navigator.standalone===true)$("#madeList").textContent="⚠ เปิดจากไอคอนหน้าจอหลัก: บน iPhone โหมดนี้เก็บ token แยกจาก Safari และอาจอัปโหลดรูปไม่ได้ ให้เปิดลิงก์ ...#admin ใน Safari โดยตรง";$("#adm").hidden=!admin;if(!admin&&!$("#chk").hidden)showChk(false);$("#admtag").hidden=!admin;if(shown.length)render(shown)}
 window.addEventListener("hashchange",()=>{setAdmin();loadPhotos()});
 document.addEventListener("click",e=>{const t=e.target;
  if(t.classList&&t.classList.contains("th")){$("#lb img").src=t.src;$("#lb").hidden=false;return}
  if(t.id==="lb"||t.closest("#lb")){$("#lb").hidden=true;return}
  if(t.dataset&&t.dataset.rm){delPhoto(t.dataset.rm);return}
+ if(t.dataset&&t.dataset.cam){phCode=t.dataset.cam;$("#phc").click();return}
  if(t.dataset&&t.dataset.ph){phCode=t.dataset.ph;$("#phf").click()}});
 const REPO="jarunyoowong-ctrl/spare-parts";
 function tokenUI(){const t=ls.get("gh_token");$("#tkrow").hidden=!!t;$("#tkok").hidden=!t}
@@ -210,11 +220,12 @@ $("#tks").onclick=async()=>{const v=$("#tkv").value.trim(),o=$("#madeList");if(!
 $("#tkx").onclick=()=>{ls.del("gh_token");tokenUI()};
 const b64=blob=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(",")[1]);r.onerror=rej;r.readAsDataURL(blob)});
 const put=(name,content)=>fetch("https://api.github.com/repos/"+REPO+"/contents/photos/"+encodeURIComponent(name),{method:"PUT",headers:{Authorization:"Bearer "+ls.get("gh_token"),Accept:"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify({message:"Add photo "+name,content,branch:"main"})});
-$("#phf").onchange=async e=>{const fs=[...e.target.files];e.target.value="";const code=phCode,out=$("#madeList");if(!code||!fs.length)return;
+async function doUpload(fs,code){const out=$("#madeList");if(!code||!fs.length)return;
  if(!ls.get("gh_token")){out.textContent="ยังไม่ได้เชื่อมต่อ GitHub: วาง token ในช่องด้านบนก่อน";return}
  const k=code.toUpperCase();
  for(const f of fs){let name,done=false;
-  try{const{blob,url}=await shrink(f,800,.82),c=await b64(blob);
+  try{out.textContent+="\n⏳ กำลังย่อรูป ("+Math.round(f.size/1024)+" KB)...";
+   const{blob,url}=await shrink(f,800,.82),c=await b64(blob);out.textContent=out.textContent.replace(/\n⏳ กำลังย่อรูป[^\n]*/,"");
    for(let tries=0;tries<4&&!done;tries++){name=nextName(code);out.textContent+="\n⏳ กำลังอัปโหลด "+name+" ...";
     const r=await put(name,c),line="\n⏳ กำลังอัปโหลด "+name+" ...";
     if(r.status===201||r.status===200){done=true;made.push(name);prev[name]=url;photoMap=photoMap||{};(photoMap[k]=photoMap[k]||[]).push(name);ls.del("photos_idx");out.textContent=out.textContent.replace(line,"\n✔ "+name+" อัปโหลดแล้ว (เว็บจริงอัปเดตใน 1–2 นาที)");refresh()}
@@ -223,7 +234,9 @@ $("#phf").onchange=async e=>{const fs=[...e.target.files];e.target.value="";cons
     else if(r.status===403||r.status===404){out.textContent+="\n✖ Token ไม่มีสิทธิ์เขียนใน repo นี้ (ต้องเป็น Contents: Read and write)";return}
     else{out.textContent+="\n✖ อัปโหลดไม่สำเร็จ (รหัส "+r.status+")";return}}
    if(!done)out.textContent+="\n✖ ตั้งชื่อไฟล์ไม่สำเร็จ กรุณาลองใหม่"}
-  catch(x){out.textContent+="\n✖ เกิดข้อผิดพลาด ตรวจอินเทอร์เน็ตแล้วลองใหม่";return}}};
+  catch(x){out.textContent=out.textContent.replace(/\n⏳[^\n]*/g,"")+"\n✖ ผิดพลาด: "+((x&&x.message)||x||"อ่านหรือย่อรูปไม่ได้")+" (ลองถ่ายใหม่ หรือเลือกรูปอื่น)";return}}}
+const onPick=e=>{const fs=[...e.target.files],code=phCode;doUpload(fs,code).finally(()=>{e.target.value=""})};
+$("#phf").onchange=onPick;$("#phc").onchange=onPick;
 tokenUI();
 async function delPhoto(name){const o=$("#madeList");if(!ls.get("gh_token")){o.textContent="ยังไม่ได้เชื่อมต่อ GitHub: วาง token ก่อน";return}
  if(!confirm("ลบรูป "+name+" ออกจากเว็บถาวร?"))return;
@@ -244,7 +257,7 @@ function chkRender(){const L=$("#chkList"),has=p=>(photoMap&&photoMap[p.code.toU
  $("#chkSum").textContent="มีรูปแล้ว "+done+" / "+tot+" รายการ ("+Math.round(done/tot*100)+"%)";$("#chkBar").style.width=(done/tot*100)+"%";
  let rows=parts.filter(p=>chkF==="all"||(chkF==="no"?!has(p):!!has(p)));
  const q=norm($("#chkQ").value);if(q)rows=rows.filter(p=>p.c.includes(q)||p.n.includes(q));
- L.innerHTML=rows.slice(0,chkN).map(p=>{const n=has(p);return `<div class="card crow"><div><div class="code">${esc(p.code)}</div><p class="name">${esc(p.name)}</p></div><div class="cr">${n?`<span class="tg ok">✔ ${n} รูป</span>`:`<span class="tg out">ไม่มีรูป</span>`}<button class="btn alt" data-ph="${esc(p.code)}">📷 เพิ่มรูป</button></div></div>`}).join("")||'<div class="empty">ไม่พบรายการ</div>';
+ L.innerHTML=rows.slice(0,chkN).map(p=>{const n=has(p);return `<div class="card crow"><div><div class="code">${esc(p.code)}</div><p class="name">${esc(p.name)}</p></div><div class="cr">${n?`<span class="tg ok">✔ ${n} รูป</span>`:`<span class="tg out">ไม่มีรูป</span>`}<div style="display:flex;gap:6px"><button class="btn alt" data-cam="${esc(p.code)}">📷 ถ่าย</button><button class="btn alt" data-ph="${esc(p.code)}">🖼 คลัง</button></div></div></div>`}).join("")||'<div class="empty">ไม่พบรายการ</div>';
  $("#chkMore").hidden=rows.length<=chkN;$("#chkMore").textContent="แสดงเพิ่ม ("+Math.min(chkN,rows.length)+" / "+rows.length+")"}
 function showChk(on){$("#chk").hidden=!on;$("#p-text").hidden=on||mode!=="text";$("#out").hidden=on;$("#chkb").textContent=on?"← กลับไปค้นหา":"📋 เช็กลิสต์รูป";if(on)chkRender()}
 $("#chkb").onclick=()=>showChk($("#chk").hidden);
