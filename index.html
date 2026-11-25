@@ -89,7 +89,7 @@ footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-si
 <input id="phc" type="file" accept="image/*" capture="environment" hidden>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-const BASE=[],BASE_DATE="",VER="SCAL PART MT 011",VER_DATE="17/11/2026";
+const BASE=[],BASE_DATE="",VER="SCAL PART MT Ver.011",VER_DATE="17/11/2026";
 const $=s=>document.querySelector(s), esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let parts=[],mode="text",shown=[],badge={},open=null,lib={},photoMap,admin=false,made=[],phCode=null,prev={},lowMode=false;
 const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
@@ -250,7 +250,7 @@ async function delPhoto(name){const o=$("#madeList");if(!ls.get("gh_token")){o.t
   for(const k in photoMap)photoMap[k]=photoMap[k].filter(f=>f!==name);delete prev[name];ls.del("photos_idx");o.textContent+="\n🗑 ลบ "+name+" แล้ว";refresh()}
  catch(e){o.textContent+="\n✖ "+e.message}}
 
-$("#ver").textContent="เวอร์ชัน "+VER+" · อัปเดต "+VER_DATE;
+$("#ver").textContent=VER+" · อัปเดต "+VER_DATE;
 function lowItems(){const r=p=>p.qty/((p.min!=null?p.min:2)||1);return parts.filter(p=>stat(p)[0]==="low").sort((a,b)=>r(a)-r(b)||a.code.localeCompare(b.code))}
 function lowCount(){const b=$("#lowb");if(b)b.textContent="⚠ รายการใกล้หมด ("+lowItems().length+")"}
 function showLow(on){lowMode=on;$("#lowb").setAttribute("aria-pressed",on);$("#lowSum").hidden=!on;
