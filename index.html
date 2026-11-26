@@ -90,9 +90,9 @@ footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-si
 <input id="phc" type="file" accept="image/*" capture="environment" hidden>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-const BASE=[],BASE_DATE="",VER="SCAL PART MT Ver.012",VER_DATE="17/11/2026";
+const BASE=[],BASE_DATE="",VER="SCAL PART MT Ver.013",VER_DATE="17/11/2026";
 const $=s=>document.querySelector(s), esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-let parts=[],mode="text",shown=[],badge={},open=null,lib={},photoMap,admin=false,made=[],phCode=null,prev={},lowMode=false,allMode=false,allN=50;
+let parts=[],mode="text",shown=[],badge={},open=null,lib={},photoMap,admin=false,made=[],phCode=null,prev={},lowMode=false,allMode=false,allN=100;
 const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
 const norm=s=>String(s).toUpperCase().replace(/[^A-Z0-9\u0E00-\u0E7F]/g,"");
 function load(){parts=[];lib=ls.get("photos_v1")||{};$("#info").textContent="กำลังโหลดข้อมูลสต็อก..."}
@@ -264,8 +264,8 @@ function showAll(on){allMode=on;$("#allb").setAttribute("aria-pressed",on);
   $("#lowSum").hidden=false;$("#lowSum").textContent="ทุกรายการ "+L.length+" รายการ เรียงตามรหัส MT (แสดง "+n+")";
   render(L.slice(0,allN).map(p=>({p})),"ยังไม่มีข้อมูล");$("#allMore").hidden=L.length<=allN;$("#allMore").textContent="แสดงเพิ่ม ("+n+" / "+L.length+")"}
  else{$("#allMore").hidden=true;$("#lowSum").hidden=true;showText()}}
-$("#allb").onclick=()=>{if(!allMode)allN=50;showAll(!allMode)};
-$("#allMore").onclick=()=>{allN+=50;showAll(true)};
+$("#allb").onclick=()=>{if(!allMode)allN=100;showAll(!allMode)};
+$("#allMore").onclick=()=>{allN+=100;showAll(true)};
 function refresh(){if(shown.length)render(shown);if(!$("#chk").hidden)chkRender()}
 let chkF="no",chkN=50;
 function chkRender(){const L=$("#chkList"),has=p=>(photoMap&&photoMap[p.code.toUpperCase()]||[]).length;
